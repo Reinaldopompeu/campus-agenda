@@ -61,7 +61,7 @@ export default defineConfig(async () => {
       {
         name: 'campus-d1-connection',
         enforce: 'pre',
-        resolveId(source) {
+        resolveId(source: string) {
           if (source === '@/db/connection' || /[/\\]db[/\\]connection(?:\.ts)?$/.test(source)) {
             return fileURLToPath(new URL('./db/cloudflare.ts', import.meta.url));
           }

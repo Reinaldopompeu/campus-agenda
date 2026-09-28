@@ -1,1 +1,1 @@
-export { database } from './vercel';
+export {database} from './cloudflare';
