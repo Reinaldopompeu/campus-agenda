@@ -15,7 +15,7 @@ Os dados ficam no IndexedDB do navegador, separados por endereço do site, naveg
 
 Importe `Reinaldopompeu/campus-agenda` ou faça Redeploy após a atualização da branch `main`. O `vercel.json` define:
 
-- Framework: Next.js
+- Framework na Vercel: Other (o build usa Next.js para gerar arquivos estáticos)
 - Instalação: `npm ci`
 - Build: `npm run build:vercel`
 - Saída: `out`
