@@ -1,0 +1,347 @@
+{
+  "id": "c512fbf8-bffa-482b-9cfb-a67bf45c985b",
+  "prevId": "a0b7021f-d424-4867-b088-758672943e95",
+  "version": "6",
+  "dialect": "sqlite",
+  "tables": {
+    "aulas": {
+      "name": "aulas",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "docente_id": {
+          "name": "docente_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "disciplina_id": {
+          "name": "disciplina_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "turma_id": {
+          "name": "turma_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "sala_id": {
+          "name": "sala_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "semestre_id": {
+          "name": "semestre_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "turno": {
+          "name": "turno",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "dia_semana": {
+          "name": "dia_semana",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "hora_inicio": {
+          "name": "hora_inicio",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "hora_fim": {
+          "name": "hora_fim",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "idx_aulas_semestre_dia_inicio": {
+          "name": "idx_aulas_semestre_dia_inicio",
+          "columns": [
+            "semestre_id",
+            "dia_semana",
+            "hora_inicio"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {
+        "aulas_docente_id_docentes_id_fk": {
+          "name": "aulas_docente_id_docentes_id_fk",
+          "tableFrom": "aulas",
+          "columnsFrom": [
+            "docente_id"
+          ],
+          "tableTo": "docentes",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "restrict"
+        },
+        "aulas_disciplina_id_disciplinas_id_fk": {
+          "name": "aulas_disciplina_id_disciplinas_id_fk",
+          "tableFrom": "aulas",
+          "columnsFrom": [
+            "disciplina_id"
+          ],
+          "tableTo": "disciplinas",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "restrict"
+        },
+        "aulas_turma_id_turmas_id_fk": {
+          "name": "aulas_turma_id_turmas_id_fk",
+          "tableFrom": "aulas",
+          "columnsFrom": [
+            "turma_id"
+          ],
+          "tableTo": "turmas",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "restrict"
+        },
+        "aulas_sala_id_salas_id_fk": {
+          "name": "aulas_sala_id_salas_id_fk",
+          "tableFrom": "aulas",
+          "columnsFrom": [
+            "sala_id"
+          ],
+          "tableTo": "salas",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "restrict"
+        },
+        "aulas_semestre_id_semestres_id_fk": {
+          "name": "aulas_semestre_id_semestres_id_fk",
+          "tableFrom": "aulas",
+          "columnsFrom": [
+            "semestre_id"
+          ],
+          "tableTo": "semestres",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "restrict"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "horario_valido": {
+          "name": "horario_valido",
+          "value": "\"aulas\".\"hora_inicio\" >= 420 AND \"aulas\".\"hora_fim\" <= 1320 AND \"aulas\".\"hora_inicio\" < \"aulas\".\"hora_fim\""
+        },
+        "dia_valido": {
+          "name": "dia_valido",
+          "value": "\"aulas\".\"dia_semana\" BETWEEN 1 AND 6"
+        },
+        "turno_valido": {
+          "name": "turno_valido",
+          "value": "\"aulas\".\"turno\" IN ('Manhã','Tarde','Noite')"
+        }
+      }
+    },
+    "disciplinas": {
+      "name": "disciplinas",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "nome": {
+          "name": "nome",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "disciplinas_nome_unique": {
+          "name": "disciplinas_nome_unique",
+          "columns": [
+            "nome"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "docentes": {
+      "name": "docentes",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "nome": {
+          "name": "nome",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "docentes_nome_unique": {
+          "name": "docentes_nome_unique",
+          "columns": [
+            "nome"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "salas": {
+      "name": "salas",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "nome": {
+          "name": "nome",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "salas_nome_unique": {
+          "name": "salas_nome_unique",
+          "columns": [
+            "nome"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "semestres": {
+      "name": "semestres",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "nome": {
+          "name": "nome",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "semestres_nome_unique": {
+          "name": "semestres_nome_unique",
+          "columns": [
+            "nome"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "turmas": {
+      "name": "turmas",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "nome": {
+          "name": "nome",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "turmas_nome_unique": {
+          "name": "turmas_nome_unique",
+          "columns": [
+            "nome"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    }
+  },
+  "views": {},
+  "enums": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  },
+  "internal": {
+    "indexes": {}
+  }
+}
