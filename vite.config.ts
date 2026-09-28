@@ -1,4 +1,5 @@
 import vinext from "vinext";
+import { fileURLToPath } from 'node:url';
 import { defineConfig } from "vite";
 import hostingConfig from "./.openai/hosting.json";
 import { readExecutionProfile } from "./scripts/execution-profile.mjs";
@@ -51,11 +52,21 @@ export default defineConfig(async () => {
   const { cloudflare } = await import("@cloudflare/vite-plugin");
 
   return {
+    resolve: { alias: { '@/db/connection': fileURLToPath(new URL('./db/cloudflare.ts', import.meta.url)) } },
     server: {
       ...(managedLinux ? { host: "0.0.0.0", allowedHosts: ["terminal.local"] } : {}),
       ...(isCodexSeatbeltSandbox ? { watch: { useFsEvents: false, usePolling: true } } : {}),
     },
     plugins: [
+      {
+        name: 'campus-d1-connection',
+        enforce: 'pre',
+        resolveId(source) {
+          if (source === '@/db/connection' || /[/\\]db[/\\]connection(?:\.ts)?$/.test(source)) {
+            return fileURLToPath(new URL('./db/cloudflare.ts', import.meta.url));
+          }
+        },
+      },
       vinext(),
       sites({ mockAuth: !managedLinux }),
       cloudflare({
