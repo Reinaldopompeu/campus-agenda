@@ -117,3 +117,41 @@ export function parseBackup(raw: unknown): Data {
   return joined(data);
 }
 export function makeBackup(data: Data) { return {format:'campus-local',version:1,exportedAt:new Date().toISOString(),data:joined(data)}; }
+
+export function parseCatalog(raw: unknown) {
+  const name = z.string().trim().min(1).max(100).transform(v => v.replace(/\s+/g, ' '));
+  return z.object({
+    format: z.literal('campus-catalog'), version: z.literal(1),
+    docentes: z.array(z.object({nome:name})).max(10000),
+    disciplinas: z.array(z.object({nome:name,codigo:z.string().trim().min(1).max(40),carga_horaria:z.number().int().positive().max(10000)})).max(10000),
+  }).parse(raw);
+}
+
+export function mergeCatalog(data: Data, raw: unknown) {
+  const catalog = parseCatalog(raw);
+  const next = structuredClone(data);
+  let docentes = 0, disciplinas = 0, atualizadas = 0, existentes = 0;
+  for (const item of catalog.docentes) {
+    if (next.docentes.some(e => normalize(e.nome) === normalize(item.nome))) { existentes++; continue; }
+    applyAction(next,{action:'save_entity',kind:'docentes',...item}); docentes++;
+  }
+  for (const item of catalog.disciplinas) {
+    const code = normalize(item.codigo);
+    const byCode = next.disciplinas.find(e => normalize(e.codigo ?? '') === code);
+    const byName = next.disciplinas.find(e => normalize(e.nome) === normalize(item.nome));
+    const old = byCode ?? byName;
+    if (byCode && byName && byCode.id !== byName.id) throw new LocalError(`O código ${item.codigo} e o nome ${item.nome} pertencem a cadastros diferentes. Revise antes de importar.`);
+    if (old) {
+      if ((old.codigo && normalize(old.codigo) !== code) || (old.carga_horaria && old.carga_horaria !== item.carga_horaria)) {
+        throw new LocalError(`A disciplina ${item.codigo} já existe com código ou carga horária diferente. Revise o cadastro antes de importar.`);
+      }
+      if (!old.codigo || !old.carga_horaria) {
+        applyAction(next,{action:'save_entity',kind:'disciplinas',...item,id:old.id,nome:old.nome}); atualizadas++;
+      } else existentes++;
+      continue;
+    }
+    applyAction(next,{action:'save_entity',kind:'disciplinas',...item}); disciplinas++;
+  }
+  data.docentes = next.docentes; data.disciplinas = next.disciplinas;
+  return {docentes,disciplinas,atualizadas,existentes};
+}

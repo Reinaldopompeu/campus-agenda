@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { applyAction, joined, LocalError, makeBackup, newData, parseBackup } from './local-model';
+import { applyAction, joined, LocalError, makeBackup, newData, parseBackup, mergeCatalog } from './local-model';
 import type { Data } from './schedule';
 
 type Account = {username:string;salt:string;hash:string;failures:number;lockedUntil:number};
@@ -120,6 +120,12 @@ export async function importLocalBackup(raw:unknown) {
   const data=parseBackup(raw),hash=await currentSession();
   await transaction(store=>{requireSession(store,hash);store.data=data;},true);
   notify();
+}
+export async function importLocalCatalog(raw:unknown) {
+  const hash=await currentSession();
+  const result=await transaction(store=>{requireSession(store,hash);return mergeCatalog(store.data,raw);},true);
+  notify();
+  return result;
 }
 export function downloadBackup(backup:unknown,prefix='campus-backup') {
   const url=URL.createObjectURL(new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}));
